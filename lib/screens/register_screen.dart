@@ -1,5 +1,8 @@
-import 'package:firebase_crud_example/utils/const.dart';
+import 'package:firebase_crud_example/utils/constants.dart';
+import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/rounded_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -41,28 +44,62 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              flex: 4,
-              child: Container(
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Color(0xff0a0e21),
-                  borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(50),
-                      bottomLeft: Radius.circular(50)),
-                ),
-                child: Text(
-                  'Register',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: animation.value * 50,
-                    fontWeight: FontWeight.bold,
+            Align(
+              alignment: Alignment.topLeft,
+              child: TextButton(
+                onPressed: () {},
+                child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (Rect bounds) => const RadialGradient(
+                    center: Alignment.topCenter,
+                    stops: [.5, 1],
+                    colors: [
+                      Colors.blue,
+                      Colors.purple,
+                    ],
+                  ).createShader(bounds),
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    size: 40,
                   ),
                 ),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ShaderMask(
+                    shaderCallback: (Rect bounds) =>
+                        kGradient.createShader(bounds),
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: animation.value * 60,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Create your account',
+                    style: TextStyle(
+                      color: Colors.blueGrey.withOpacity(0.7),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  )
+                ],
               ),
             ),
             Expanded(
@@ -70,27 +107,56 @@ class _LoginScreenState extends State<LoginScreen>
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.center,
-                      onChanged: (value) {},
-                      decoration: kTextFiledInputDecoration.copyWith(
-                        hintText: 'Enter your email',
+                    const RoundedTextField(
+                      hintText: 'e-mail',
+                      icon: Icon(
+                        Icons.email_outlined,
                       ),
+                      type: TextFieldTypes.email,
+                    ),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    const RoundedTextField(
+                      hintText: 'password',
+                      icon: Icon(Icons.key_off_outlined),
+                      type: TextFieldTypes.password,
+                    ),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    const RoundedTextField(
+                      hintText: 'confirm password',
+                      icon: Icon(Icons.key_off_outlined),
+                      type: TextFieldTypes.password,
+                    ),
+                    const SizedBox(
+                      height: 50.0,
+                    ),
+                    BottomButton(
+                      onPress: () {},
+                      buttonTitle: 'Sign Up ➜',
                     ),
                     const SizedBox(
                       height: 10.0,
                     ),
-                    TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.center,
-                      onChanged: (value) {},
-                      decoration: kTextFiledInputDecoration.copyWith(
-                        hintText: 'Enter your password',
-                      ),
-                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already have an account?',
+                          style: TextStyle(
+                              color: Colors.blueGrey.withOpacity(0.5),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text('Register'),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
