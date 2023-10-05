@@ -22,7 +22,7 @@ class AddProductScreen extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -132,60 +132,39 @@ class AddProductScreen extends StatelessWidget {
                                     onPressed: () {},
                                   ),
                                 ),
-                                // Container(
-                                //   decoration: BoxDecoration(
-                                //     color: Colors.indigoAccent.shade100,
-                                //     borderRadius: const BorderRadius.all(
-                                //       Radius.circular(15),
-                                //     ),
-                                //     boxShadow: const [
-                                //       BoxShadow(
-                                //         color: Colors.black12,
-                                //         spreadRadius: 5,
-                                //         blurRadius: 10,
-                                //         offset: Offset(0, 5),
-                                //       ),
-                                //     ],
-                                //   ),
-                                //   child: TextButton(
-                                //     child: const Text(
-                                //       'Select Image',
-                                //       style: TextStyle(color: Colors.white),
-                                //     ),
-                                //     onPressed: () {},
-                                //   ),
-                                // ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 40,
                             ),
-                            Text(
+                            const Text(
                               'Product Name',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            RoundedProductTextField(hintText: 'Product Name'),
-                            Text(
+                            const RoundedProductTextField(
+                                hintText: 'Product Name'),
+                            const Text(
                               'Product Name',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            RoundedProductTextField(hintText: 'Product ID'),
-                            Text(
+                            const RoundedProductTextField(
+                                hintText: 'Product ID'),
+                            const Text(
                               'Product Quantity',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            RoundedProductTextField(
+                            const RoundedProductTextField(
                                 hintText: 'Product Quantity'),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Center(
@@ -197,12 +176,6 @@ class AddProductScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      // const ProductCard(
-                      //     productName: 'Product Name',
-                      //     productID: 'XXXXX',
-                      //     productQty: 0,
-                      //     imagePath: 'images/shoe1.png'),
                     ],
                   ),
                 ),
