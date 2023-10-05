@@ -52,18 +52,7 @@ class RoundedTextField extends StatelessWidget {
             onChanged: (value) {},
             decoration: kTextFiledInputDecoration.copyWith(
               hintText: hintText,
-              prefixIcon: ShaderMask(
-                blendMode: BlendMode.srcIn,
-                shaderCallback: (Rect bounds) => const RadialGradient(
-                  center: Alignment.topCenter,
-                  stops: [.5, 1],
-                  colors: [
-                    Colors.blue,
-                    Colors.purple,
-                  ],
-                ).createShader(bounds),
-                child: icon,
-              ),
+              prefixIcon: buildGradientIcon(icon),
             ),
           ),
         ),

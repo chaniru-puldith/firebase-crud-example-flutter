@@ -22,3 +22,18 @@ const kTextFiledInputDecoration = InputDecoration(
     );
 
 const kGradient = LinearGradient(colors: [Colors.purple, Colors.blue]);
+
+ShaderMask buildGradientIcon(Widget icon) {
+  return ShaderMask(
+    blendMode: BlendMode.srcIn,
+    shaderCallback: (Rect bounds) => const RadialGradient(
+      center: Alignment.topCenter,
+      stops: [.5, 1],
+      colors: [
+        Colors.blue,
+        Colors.purple,
+      ],
+    ).createShader(bounds),
+    child: icon,
+  );
+}
