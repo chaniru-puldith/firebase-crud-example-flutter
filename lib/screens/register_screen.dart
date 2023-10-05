@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('Register'),
+                          child: const Text('Login'),
                         ),
                       ],
                     )
