@@ -2,16 +2,34 @@ import 'package:flutter/material.dart';
 
 import 'constants.dart';
 
-class RoundedProductTextField extends StatelessWidget {
+late TextEditingController _textEditingController;
+
+class RoundedProductTextField extends StatefulWidget {
   final String hintText;
+  final String? labelText;
 
   const RoundedProductTextField({
     super.key,
     required this.hintText,
+    required this.labelText,
   });
 
   @override
+  State<RoundedProductTextField> createState() =>
+      _RoundedProductTextFieldState();
+}
+
+class _RoundedProductTextFieldState extends State<RoundedProductTextField> {
+  @override
+  void initState() {
+    _textEditingController = TextEditingController();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _textEditingController.text = widget.labelText!;
+    print(widget.labelText);
     return Container(
       padding: EdgeInsets.only(bottom: 20, top: 5),
       width: MediaQuery.of(context).size.width * 0.85,
@@ -44,8 +62,9 @@ class RoundedProductTextField extends StatelessWidget {
             ),
             onChanged: (value) {},
             decoration: kTextFiledInputDecoration.copyWith(
-              hintText: hintText,
+              hintText: widget.hintText,
             ),
+            controller: _textEditingController,
           ),
         ),
       ),
