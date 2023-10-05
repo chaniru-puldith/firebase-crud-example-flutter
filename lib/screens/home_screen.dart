@@ -1,4 +1,6 @@
+import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
+import 'package:firebase_crud_example/utils/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,6 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String date = DateFormat.yMMMd().format(DateTime.now());
+    const String name = 'Chaniru';
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -29,7 +32,7 @@ class HomeScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           const Text(
-                            'Hi, Chaniru!',
+                            'Hi, $name!',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -88,22 +91,62 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Products',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey.shade800,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Products',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey.shade800,
+                            ),
+                          ),
+                          BottomButton(
+                            onPress: () {},
+                            buttonTitle: 'Add Product',
+                          ),
+                        ],
                       ),
                       Expanded(
                         child: ListView(
-                          children: [
-                            ProductCard(),
-                            ProductCard(),
-                            ProductCard(),
-                            ProductCard(),
-                            ProductCard(),
+                          children: const [
+                            ProductCard(
+                              productName: 'Adidas Shoe',
+                              productID: 'AD8055',
+                              productQty: 9,
+                              imagePath: 'images/shoe2.png',
+                            ),
+                            ProductCard(
+                              productName: 'Puma Shoe',
+                              productID: 'PU7805',
+                              productQty: 11,
+                              imagePath: 'images/shoe3.png',
+                            ),
+                            ProductCard(
+                              productName: 'Nike Shoe',
+                              productID: 'NI2057',
+                              productQty: 10,
+                              imagePath: 'images/shoe4.png',
+                            ),
+                            ProductCard(
+                              productName: 'Adidas Shoe',
+                              productID: 'AD8055',
+                              productQty: 9,
+                              imagePath: 'images/shoe2.png',
+                            ),
+                            ProductCard(
+                              productName: 'Puma Shoe',
+                              productID: 'PU7805',
+                              productQty: 11,
+                              imagePath: 'images/shoe3.png',
+                            ),
+                            ProductCard(
+                              productName: 'Nike Shoe',
+                              productID: 'NI2057',
+                              productQty: 10,
+                              imagePath: 'images/shoe4.png',
+                            ),
                           ],
                         ),
                       ),
@@ -114,109 +157,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  const ProductCard({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 30, left: 10, right: 10),
-      width: MediaQuery.of(context).size.width * 0.85,
-      height: 100,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(
-          Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            spreadRadius: 5,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: SizedBox(
-              height: 100,
-              child: Image.asset('images/shoe2.png'),
-            ),
-          ),
-          Container(
-            width: 2,
-            height: 70,
-            decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: const BorderRadius.all(Radius.circular(50))),
-          ),
-          const Expanded(
-            flex: 2,
-            child: Padding(
-              padding: EdgeInsets.only(top: 20.0, left: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Name:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text('Adidas Shoe'),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'ID:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text('0058'),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'QTY:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text('9'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          TextButton(
-              onPressed: () {},
-              child: buildGradientIcon(const Icon(Icons.edit_outlined)))
-        ],
       ),
     );
   }

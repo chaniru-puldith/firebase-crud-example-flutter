@@ -34,7 +34,7 @@ class BottomButton extends StatelessWidget {
             buttonTitle,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 20.0,
+              fontSize: 19.0,
               fontWeight: FontWeight.bold,
             ),
           ),
