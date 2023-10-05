@@ -4,10 +4,12 @@ import 'constants.dart';
 
 class RoundedProductTextField extends StatelessWidget {
   final String hintText;
+  final String? labelText;
 
   const RoundedProductTextField({
     super.key,
     required this.hintText,
+    required this.labelText,
   });
 
   @override
@@ -45,6 +47,7 @@ class RoundedProductTextField extends StatelessWidget {
             onChanged: (value) {},
             decoration: kTextFiledInputDecoration.copyWith(
               hintText: hintText,
+              labelText: labelText,
             ),
           ),
         ),

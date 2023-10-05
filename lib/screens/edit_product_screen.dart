@@ -10,6 +10,11 @@ class AddProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String productName = 'Adidas Shoe';
+    const String productId = 'AD8055';
+    const String productQty = '9';
+    const String productImage = 'images/shoe2.png';
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -33,7 +38,7 @@ class AddProductScreen extends StatelessWidget {
                         children: [
                           Center(
                             child: Text(
-                              'Add New Product',
+                              'Edit Product',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white.withOpacity(0.9),
@@ -101,7 +106,7 @@ class AddProductScreen extends StatelessWidget {
                                   ),
                                   child: SizedBox(
                                     height: 100,
-                                    child: Image.asset('images/shoe1.png'),
+                                    child: Image.asset(productImage),
                                   ),
                                 ),
                                 const SizedBox(
@@ -146,7 +151,7 @@ class AddProductScreen extends StatelessWidget {
                             ),
                             const RoundedProductTextField(
                               hintText: 'Product Name',
-                              labelText: null,
+                              labelText: productName,
                             ),
                             const Text(
                               'Product Name',
@@ -157,7 +162,7 @@ class AddProductScreen extends StatelessWidget {
                             ),
                             const RoundedProductTextField(
                               hintText: 'Product ID',
-                              labelText: null,
+                              labelText: productId,
                             ),
                             const Text(
                               'Product Quantity',
@@ -168,7 +173,7 @@ class AddProductScreen extends StatelessWidget {
                             ),
                             const RoundedProductTextField(
                               hintText: 'Product Quantity',
-                              labelText: null,
+                              labelText: productQty,
                             ),
                             const SizedBox(
                               height: 20,
