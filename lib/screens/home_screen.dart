@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Center(
                             child: Text(
