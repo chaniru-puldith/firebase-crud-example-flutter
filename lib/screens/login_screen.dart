@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../utils/rounded_text_field.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
+class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation animation;
@@ -80,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     shaderCallback: (Rect bounds) =>
                         kGradient.createShader(bounds),
                     child: Text(
-                      'Sign Up',
+                      'Log In',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: animation.value * 60,
@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     height: 20,
                   ),
                   Text(
-                    'Create your account',
+                    'Enter your credentials',
                     style: TextStyle(
                       color: Colors.blueGrey.withOpacity(0.7),
                       fontWeight: FontWeight.bold,
@@ -125,19 +125,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                       type: TextFieldTypes.password,
                     ),
                     const SizedBox(
-                      height: 20.0,
-                    ),
-                    const RoundedTextField(
-                      hintText: 'confirm password',
-                      icon: Icon(Icons.key_off_outlined),
-                      type: TextFieldTypes.password,
-                    ),
-                    const SizedBox(
                       height: 50.0,
                     ),
                     BottomButton(
                       onPress: () {},
-                      buttonTitle: 'Sign Up ➜',
+                      buttonTitle: 'Log In ➜',
                     ),
                     const SizedBox(
                       height: 10.0,
@@ -146,14 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Already have an account?',
+                          'Don\'t have an account?',
                           style: TextStyle(
                               color: Colors.blueGrey.withOpacity(0.5),
                               fontWeight: FontWeight.bold),
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('Login'),
+                          child: const Text('Sign Up'),
                         ),
                       ],
                     )
