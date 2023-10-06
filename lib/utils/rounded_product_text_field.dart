@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'constants.dart';
 
-late TextEditingController _textEditingController;
-
 class RoundedProductTextField extends StatefulWidget {
   final String hintText;
   final String? labelText;
@@ -20,15 +18,15 @@ class RoundedProductTextField extends StatefulWidget {
 }
 
 class _RoundedProductTextFieldState extends State<RoundedProductTextField> {
+  final TextEditingController _textEditingController = TextEditingController();
   @override
   void initState() {
-    _textEditingController = TextEditingController();
+    _textEditingController.text = widget.labelText!;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _textEditingController.text = widget.labelText!;
     print(widget.labelText);
     return Container(
       padding: EdgeInsets.only(bottom: 20, top: 5),
@@ -69,5 +67,11 @@ class _RoundedProductTextFieldState extends State<RoundedProductTextField> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
   }
 }
