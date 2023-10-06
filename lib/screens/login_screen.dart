@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const Text(
-                      "Error",
+                      "Success",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.green,
