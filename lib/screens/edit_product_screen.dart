@@ -1,8 +1,6 @@
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
-import 'package:firebase_crud_example/utils/product_card.dart';
 import 'package:firebase_crud_example/utils/rounded_product_text_field.dart';
-import 'package:firebase_crud_example/utils/rounded_text_field.dart';
 import 'package:flutter/material.dart';
 
 class EditProductScreen extends StatefulWidget {
