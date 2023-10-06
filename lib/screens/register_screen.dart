@@ -1,8 +1,7 @@
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:flutter/material.dart';
-
-import '../utils/rounded_text_field.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,31 +12,138 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late Animation animation;
+  late AnimationController _animationController;
+  late Animation _animation;
+  String? _email;
+  String? _password;
+  String? _confirmPassword;
+
+  void displayError(error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Icon(
+                Icons.error_outline,
+                size: 18,
+                color: Colors.red,
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "Error",
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      error,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
+  }
+
+  String? _isInvalid() {
+    if (_email == null ||
+        _password == null ||
+        _confirmPassword == null ||
+        _email!.isEmpty ||
+        _password!.isEmpty ||
+        _confirmPassword!.isEmpty) {
+      return ('All fields are mandatory');
+    } else if (!EmailValidator.validate(_email!)) {
+      return ('Invalid Email Address');
+    } else {
+      bool hasUppercase = _password!.contains(RegExp(r'[A-Z]'));
+      bool hasDigits = _password!.contains(RegExp(r'[0-9]'));
+      bool hasLowercase = _password!.contains(RegExp(r'[a-z]'));
+      bool hasSpecialCharacters =
+          _password!.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+      bool hasMinLength = _password!.length > 8;
+
+      if (hasUppercase &&
+          hasDigits &&
+          hasLowercase &&
+          hasSpecialCharacters &&
+          hasMinLength) {
+        if (_password != _confirmPassword) {
+          return 'Passwords are different';
+        } else {
+          return null;
+        }
+      } else {
+        return 'Password should contain at least 8 characters with at least one a-z, A-Z, 0-9 and special character';
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
 
-    animationController = AnimationController(
+    _animationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    animation =
-        CurvedAnimation(parent: animationController, curve: Curves.decelerate);
+    _animation =
+        CurvedAnimation(parent: _animationController, curve: Curves.decelerate);
 
-    animationController.forward();
+    _animationController.forward();
 
-    animationController.addListener(() {
+    _animationController.addListener(() {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -83,7 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       'Sign Up',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: animation.value * 60,
+                        fontSize: _animation.value * 60,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -109,34 +215,72 @@ class _RegisterScreenState extends State<RegisterScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const RoundedTextField(
-                      hintText: 'e-mail',
-                      icon: Icon(
-                        Icons.email_outlined,
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      decoration: kTextFormFieldOuterContainerStyle,
+                      child: Center(
+                        child: TextField(
+                          style: kTextFormFieldStyle,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: kTextFiledInputDecoration.copyWith(
+                            hintText: 'e-mail',
+                            prefixIcon: kGradientEmailIcon,
+                          ),
+                          onChanged: (value) {
+                            _email = value;
+                          },
+                        ),
                       ),
-                      type: TextFieldTypes.email,
                     ),
                     const SizedBox(
                       height: 20.0,
                     ),
-                    const RoundedTextField(
-                      hintText: 'password',
-                      icon: Icon(Icons.key_off_outlined),
-                      type: TextFieldTypes.password,
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      decoration: kTextFormFieldOuterContainerStyle,
+                      child: Center(
+                        child: TextField(
+                          style: kTextFormFieldStyle,
+                          obscureText: true,
+                          decoration: kTextFiledInputDecoration.copyWith(
+                            hintText: 'password',
+                            prefixIcon: kGradientPasswordIcon,
+                          ),
+                          onChanged: (value) {
+                            _password = value;
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 20.0,
                     ),
-                    const RoundedTextField(
-                      hintText: 'confirm password',
-                      icon: Icon(Icons.key_off_outlined),
-                      type: TextFieldTypes.password,
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      decoration: kTextFormFieldOuterContainerStyle,
+                      child: Center(
+                        child: TextField(
+                          style: kTextFormFieldStyle,
+                          obscureText: true,
+                          decoration: kTextFiledInputDecoration.copyWith(
+                            hintText: 'confirm password',
+                            prefixIcon: kGradientPasswordIcon,
+                          ),
+                          onChanged: (value) {
+                            _confirmPassword = value;
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 50.0,
                     ),
                     BottomButton(
-                      onPress: () {},
+                      onPress: () {
+                        bool isValid = false;
+                        String? error = _isInvalid();
+                        error == null ? isValid = true : displayError(error);
+                      },
                       buttonTitle: 'Sign Up ➜',
                     ),
                     const SizedBox(
