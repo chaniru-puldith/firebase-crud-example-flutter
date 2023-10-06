@@ -51,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.green.withOpacity(0.1),
                 spreadRadius: 10,
                 blurRadius: 10,
                 offset: const Offset(0, 5),
