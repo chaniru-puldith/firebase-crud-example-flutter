@@ -1,5 +1,4 @@
 import 'package:firebase_crud_example/screens/login_screen.dart';
-import 'package:firebase_crud_example/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
