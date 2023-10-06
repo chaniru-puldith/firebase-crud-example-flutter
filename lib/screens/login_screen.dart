@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud_example/screens/register_screen.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -252,7 +253,9 @@ class _LoginScreenState extends State<LoginScreen>
             Align(
               alignment: Alignment.topLeft,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
                   shaderCallback: (Rect bounds) => const RadialGradient(
@@ -386,7 +389,12 @@ class _LoginScreenState extends State<LoginScreen>
                               fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterScreen()));
+                          },
                           child: const Text('Sign Up'),
                         ),
                       ],

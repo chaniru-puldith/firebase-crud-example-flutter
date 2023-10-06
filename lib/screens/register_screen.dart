@@ -248,7 +248,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             Align(
               alignment: Alignment.topLeft,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
                   shaderCallback: (Rect bounds) => const RadialGradient(
@@ -417,7 +419,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                               fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           child: const Text('Login'),
                         ),
                       ],
