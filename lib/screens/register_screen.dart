@@ -1,5 +1,6 @@
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
+import 'package:firebase_crud_example/utils/gradient_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -17,6 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen>
   String? _email;
   String? _password;
   String? _confirmPassword;
+  bool _isPasswordHidden = true;
+  bool _isConfirmPasswordHidden = true;
 
   void displayError(error) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -241,10 +244,20 @@ class _RegisterScreenState extends State<RegisterScreen>
                       child: Center(
                         child: TextField(
                           style: kTextFormFieldStyle,
-                          obscureText: true,
+                          obscureText: _isPasswordHidden,
                           decoration: kTextFiledInputDecoration.copyWith(
                             hintText: 'password',
                             prefixIcon: kGradientPasswordIcon,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              },
+                              icon: _isPasswordHidden
+                                  ? kGradientNotVisibleIcon
+                                  : kGradientVisibleIcon,
+                            ),
                           ),
                           onChanged: (value) {
                             _password = value;
@@ -261,10 +274,21 @@ class _RegisterScreenState extends State<RegisterScreen>
                       child: Center(
                         child: TextField(
                           style: kTextFormFieldStyle,
-                          obscureText: true,
+                          obscureText: _isConfirmPasswordHidden,
                           decoration: kTextFiledInputDecoration.copyWith(
                             hintText: 'confirm password',
                             prefixIcon: kGradientPasswordIcon,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isConfirmPasswordHidden =
+                                      !_isConfirmPasswordHidden;
+                                });
+                              },
+                              icon: _isConfirmPasswordHidden
+                                  ? kGradientNotVisibleIcon
+                                  : kGradientVisibleIcon,
+                            ),
                           ),
                           onChanged: (value) {
                             _confirmPassword = value;
