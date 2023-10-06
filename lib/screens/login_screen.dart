@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -12,8 +14,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
+  final _auth = FirebaseAuth.instance;
+  final _database = FirebaseDatabase.instance;
   late AnimationController animationController;
   late Animation animation;
+  bool _isPasswordHidden = true;
   String? _email;
   String? _password;
 
@@ -40,6 +45,101 @@ class _LoginScreenState extends State<LoginScreen>
   void dispose() {
     animationController.dispose();
     super.dispose();
+  }
+
+  Future<String> login(
+      {required String email, required String password}) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      _auth.authStateChanges().listen((User? user) async {
+        if (user != null) {
+          DatabaseReference ref = _database.ref("users/${user.uid}");
+          await ref
+              .set({"uid": user.uid, "email": email, "password": password});
+        }
+      });
+      return 'Success';
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return 'Email Not Registered';
+      } else if (e.code == 'wrong-password') {
+        return 'Invalid Credentials';
+      } else if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
+        return 'Invalid Credentials';
+      } else {
+        return 'Unexpected Error';
+      }
+    }
+  }
+
+  void displaySuccess(message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Icon(
+                Icons.check_circle_outline,
+                size: 18,
+                color: Colors.green,
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "Error",
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
   }
 
   void displayError(error) {
@@ -79,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const Text(
-                      "Error",
+                      "Success",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.red,
@@ -233,11 +333,21 @@ class _LoginScreenState extends State<LoginScreen>
                       decoration: kTextFormFieldOuterContainerStyle,
                       child: Center(
                         child: TextField(
-                          obscureText: true,
+                          obscureText: _isPasswordHidden,
                           style: kTextFormFieldStyle,
                           decoration: kTextFiledInputDecoration.copyWith(
                             hintText: 'password',
                             prefixIcon: kGradientPasswordIcon,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              },
+                              icon: _isPasswordHidden
+                                  ? kGradientNotVisibleIcon
+                                  : kGradientVisibleIcon,
+                            ),
                           ),
                           onChanged: (value) {
                             _password = value;
@@ -249,9 +359,17 @@ class _LoginScreenState extends State<LoginScreen>
                       height: 50.0,
                     ),
                     BottomButton(
-                      onPress: () {
+                      onPress: () async {
                         String? error = _isInvalid();
-                        error == null ? print('valid') : displayError(error);
+                        if (error == null) {
+                          var response =
+                              await login(email: _email!, password: _password!);
+                          response == 'Success'
+                              ? displaySuccess(response)
+                              : displayError(response);
+                        } else {
+                          displayError(error);
+                        }
                       },
                       buttonTitle: 'Log In ➜',
                     ),

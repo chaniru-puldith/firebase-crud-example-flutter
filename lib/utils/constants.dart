@@ -44,3 +44,5 @@ const kTextFormFieldStyle = TextStyle(
 
 const kGradientEmailIcon = GradientIcon(icon: Icon(Icons.email_outlined));
 const kGradientPasswordIcon = GradientIcon(icon: Icon(Icons.key_off_outlined));
+const kGradientVisibleIcon = GradientIcon(icon: Icon(Icons.visibility));
+const kGradientNotVisibleIcon = GradientIcon(icon: Icon(Icons.visibility_off));
