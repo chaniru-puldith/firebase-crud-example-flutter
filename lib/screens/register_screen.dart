@@ -1,6 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
-import 'package:firebase_crud_example/utils/gradient_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -13,6 +15,8 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
+  final _auth = FirebaseAuth.instance;
+  final _database = FirebaseDatabase.instance;
   late AnimationController _animationController;
   late Animation _animation;
   String? _email;
@@ -20,6 +24,88 @@ class _RegisterScreenState extends State<RegisterScreen>
   String? _confirmPassword;
   bool _isPasswordHidden = true;
   bool _isConfirmPasswordHidden = true;
+
+  Future<void> register(
+      {required String email, required String password}) async {
+    await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    _auth.authStateChanges().listen((User? user) async {
+      if (user != null) {
+        DatabaseReference ref = _database.ref("users/${user.uid}");
+        await ref.set({"uid": user.uid, "email": email, "password": password});
+      }
+    });
+  }
+
+  void displaySuccess(message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Icon(
+                Icons.check_circle_outline,
+                size: 18,
+                color: Colors.green,
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "Success",
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
+  }
 
   void displayError(error) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -300,10 +386,21 @@ class _RegisterScreenState extends State<RegisterScreen>
                       height: 50.0,
                     ),
                     BottomButton(
-                      onPress: () {
+                      onPress: () async {
                         bool isValid = false;
                         String? error = _isInvalid();
                         error == null ? isValid = true : displayError(error);
+
+                        if (isValid) {
+                          try {
+                            await register(
+                                email: _email!, password: _password!);
+                            displaySuccess('User Registered');
+                          } catch (e) {
+                            print('Registration Not Success......!');
+                            print(e);
+                          }
+                        }
                       },
                       buttonTitle: 'Sign Up ➜',
                     ),
