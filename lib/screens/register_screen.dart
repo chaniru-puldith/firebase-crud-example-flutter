@@ -203,7 +203,9 @@ class _RegisterScreenState extends State<RegisterScreen>
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                   child: ShaderMask(
                     blendMode: BlendMode.srcIn,
                     shaderCallback: (Rect bounds) => const RadialGradient(
@@ -357,6 +359,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                               message: "User Registered",
                               type: SnackBarType.success,
                             );
+
+                            Navigator.of(context).pop();
                           } else {
                             displaySnackBar(
                               message: response,
@@ -381,7 +385,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                           child: const Text(
                             'Login',
                             style: TextStyle(
