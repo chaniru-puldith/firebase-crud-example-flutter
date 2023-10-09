@@ -7,17 +7,40 @@ enum TextFieldTypes { password, email }
 enum SnackBarType { error, success }
 
 const kTextFiledInputDecoration = InputDecoration(
-  hintText: 'Enter Text',
-  hintStyle: TextStyle(
-    fontStyle: FontStyle.italic,
-    fontSize: 18,
-    color: Colors.grey,
-  ),
-  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-  border: OutlineInputBorder(borderSide: BorderSide.none),
-);
+    hintText: 'Enter Text',
+    hintStyle: TextStyle(
+      fontStyle: FontStyle.italic,
+      fontSize: 17,
+      fontWeight: FontWeight.bold,
+      color: Colors.grey,
+    ),
+    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+    border: OutlineInputBorder(borderSide: BorderSide.none)
+    // enabledBorder: OutlineInputBorder(
+    //   borderSide: BorderSide.none,
+    // ),
+    // focusedBorder: OutlineInputBorder(
+    //   borderSide: BorderSide(color: Colors.black12, width: 1),
+    //   borderRadius: BorderRadius.all(Radius.circular(32.0)),
+    // ),
+    );
 
 const kGradient = LinearGradient(colors: [Colors.purple, Colors.blue]);
+
+ShaderMask buildGradientIcon(Widget icon) {
+  return ShaderMask(
+    blendMode: BlendMode.srcIn,
+    shaderCallback: (Rect bounds) => const RadialGradient(
+      center: Alignment.topCenter,
+      stops: [.5, 1],
+      colors: [
+        Colors.blue,
+        Colors.purple,
+      ],
+    ).createShader(bounds),
+    child: icon,
+  );
+}
 
 const kTextFormFieldOuterContainerStyle = BoxDecoration(
   color: Colors.white,
