@@ -4,12 +4,13 @@ import 'gradient_icon.dart';
 
 enum TextFieldTypes { password, email }
 
+enum SnackBarType { error, success }
+
 const kTextFiledInputDecoration = InputDecoration(
   hintText: 'Enter Text',
   hintStyle: TextStyle(
     fontStyle: FontStyle.italic,
-    fontSize: 15,
-    fontWeight: FontWeight.bold,
+    fontSize: 18,
     color: Colors.grey,
   ),
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
@@ -37,8 +38,7 @@ const kTextFormFieldOuterContainerStyle = BoxDecoration(
 );
 
 const kTextFormFieldStyle = TextStyle(
-  fontSize: 19,
-  fontWeight: FontWeight.bold,
+  fontSize: 18,
   fontStyle: FontStyle.italic,
 );
 
