@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crud_example/screens/register_screen.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -50,6 +49,11 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<String> login(
       {required String email, required String password}) async {
+    String message;
+    showDialog(
+        context: context,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       _auth.authStateChanges().listen((User? user) async {
@@ -59,27 +63,29 @@ class _LoginScreenState extends State<LoginScreen>
               .set({"uid": user.uid, "email": email, "password": password});
         }
       });
-      return 'Success';
+
+      message = 'Success';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return 'Email Not Registered';
+        message = 'Email Not Registered';
       } else if (e.code == 'wrong-password') {
-        return 'Invalid Credentials';
+        message = 'Invalid Credentials';
       } else if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
-        return 'Invalid Credentials';
+        message = 'Invalid Credentials';
       } else {
-        return 'Unexpected Error';
+        message = 'Unexpected Error';
       }
     }
+    Navigator.of(context).pop();
+    return message;
   }
 
-  void displaySuccess(message) {
+  void displaySnackBar({required String message, required SnackBarType type}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Container(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           margin: const EdgeInsets.all(8.0),
-          height: 90,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.all(
@@ -87,7 +93,9 @@ class _LoginScreenState extends State<LoginScreen>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.green.withOpacity(0.1),
+                color: type == SnackBarType.error
+                    ? Colors.red.withOpacity(0.1)
+                    : Colors.green.withOpacity(0.1),
                 spreadRadius: 10,
                 blurRadius: 10,
                 offset: const Offset(0, 5),
@@ -97,107 +105,41 @@ class _LoginScreenState extends State<LoginScreen>
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Icon(
-                Icons.check_circle_outline,
-                size: 18,
-                color: Colors.green,
+              Icon(
+                type == SnackBarType.error
+                    ? Icons.error_outline
+                    : Icons.check_circle_outline,
+                size: 32,
+                color: type == SnackBarType.error ? Colors.red : Colors.green,
               ),
               const SizedBox(
-                width: 10.0,
+                width: 8.0,
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Text(
-                      "Success",
+                    Text(
+                      type == SnackBarType.error ? "Error" : "Success",
                       style: TextStyle(
-                        fontSize: 17,
-                        color: Colors.green,
+                        fontSize: 18,
+                        color: type == SnackBarType.error
+                            ? Colors.red
+                            : Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(
-                      height: 4.0,
+                      height: 6.0,
                     ),
                     Text(
                       message,
                       style: const TextStyle(
                         color: Colors.grey,
-                        fontSize: 13,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-    );
-  }
-
-  void displayError(error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Container(
-          padding: const EdgeInsets.all(8.0),
-          margin: const EdgeInsets.all(8.0),
-          height: 90,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.red.withOpacity(0.1),
-                spreadRadius: 10,
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Icon(
-                Icons.error_outline,
-                size: 18,
-                color: Colors.red,
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Error",
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4.0,
-                    ),
-                    Text(
-                      error,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 3,
+                      maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -218,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen>
         _password == null ||
         _email!.isEmpty ||
         _password!.isEmpty) {
-      return ('All fields are mandatory');
+      return ('Email and Password can\'t be empty');
     } else if (!EmailValidator.validate(_email!)) {
       return ('Invalid Email Address');
     } else {
@@ -252,23 +194,24 @@ class _LoginScreenState extends State<LoginScreen>
           children: [
             Align(
               alignment: Alignment.topLeft,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (Rect bounds) => const RadialGradient(
-                    center: Alignment.topCenter,
-                    stops: [.5, 1],
-                    colors: [
-                      Colors.blue,
-                      Colors.purple,
-                    ],
-                  ).createShader(bounds),
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    size: 40,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextButton(
+                  onPressed: () {},
+                  child: ShaderMask(
+                    blendMode: BlendMode.srcIn,
+                    shaderCallback: (Rect bounds) => const RadialGradient(
+                      center: Alignment.topCenter,
+                      stops: [.5, 1],
+                      colors: [
+                        Colors.blue,
+                        Colors.purple,
+                      ],
+                    ).createShader(bounds),
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 30,
+                    ),
                   ),
                 ),
               ),
@@ -297,8 +240,7 @@ class _LoginScreenState extends State<LoginScreen>
                     'Enter your credentials',
                     style: TextStyle(
                       color: Colors.blueGrey.withOpacity(0.7),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                      fontSize: 18,
                     ),
                   )
                 ],
@@ -368,10 +310,13 @@ class _LoginScreenState extends State<LoginScreen>
                           var response =
                               await login(email: _email!, password: _password!);
                           response == 'Success'
-                              ? displaySuccess(response)
-                              : displayError(response);
+                              ? displaySnackBar(
+                                  message: response, type: SnackBarType.success)
+                              : displaySnackBar(
+                                  message: response, type: SnackBarType.error);
                         } else {
-                          displayError(error);
+                          displaySnackBar(
+                              message: error, type: SnackBarType.error);
                         }
                       },
                       buttonTitle: 'Log In ➜',
@@ -385,17 +330,17 @@ class _LoginScreenState extends State<LoginScreen>
                         Text(
                           'Don\'t have an account?',
                           style: TextStyle(
-                              color: Colors.blueGrey.withOpacity(0.5),
-                              fontWeight: FontWeight.bold),
+                            color: Colors.blueGrey.withOpacity(0.5),
+                            fontSize: 16,
+                          ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegisterScreen()));
-                          },
-                          child: const Text('Sign Up'),
+                          onPressed: () {},
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ],
                     )
