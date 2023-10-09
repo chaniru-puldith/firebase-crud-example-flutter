@@ -18,7 +18,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 30, left: 10, right: 10),
+      margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
       width: MediaQuery.of(context).size.width * 0.85,
       height: 100,
       decoration: const BoxDecoration(
@@ -37,11 +37,14 @@ class ProductCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: SizedBox(
-              height: 100,
-              child: Image.asset(imagePath),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Expanded(
+              flex: 1,
+              child: SizedBox(
+                height: 100,
+                child: Image.network(imagePath),
+              ),
             ),
           ),
           Container(

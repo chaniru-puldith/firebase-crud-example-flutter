@@ -1,16 +1,47 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/product_card.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _auth = FirebaseAuth.instance;
+  final _database = FirebaseDatabase.instance;
+  late User _loggedInUser;
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        _loggedInUser = user;
+        print(_loggedInUser.email.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final String date = DateFormat.yMMMd().format(DateTime.now());
-    const String name = 'Chaniru';
+    final String name = _loggedInUser.email.toString().split('@')[0];
+
+    Query dbRef = _database.ref().child('products');
+    print(dbRef.get());
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -31,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                       flex: 2,
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             'Hi, $name!',
                             style: TextStyle(
                               color: Colors.white,
@@ -87,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -109,45 +140,37 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                       Expanded(
-                        child: ListView(
-                          children: const [
-                            ProductCard(
-                              productName: 'Adidas Shoe',
-                              productID: 'AD8055',
-                              productQty: 9,
-                              imagePath: 'images/shoe2.png',
-                            ),
-                            ProductCard(
-                              productName: 'Puma Shoe',
-                              productID: 'PU7805',
-                              productQty: 11,
-                              imagePath: 'images/shoe3.png',
-                            ),
-                            ProductCard(
-                              productName: 'Nike Shoe',
-                              productID: 'NI2057',
-                              productQty: 10,
-                              imagePath: 'images/shoe4.png',
-                            ),
-                            ProductCard(
-                              productName: 'Adidas Shoe',
-                              productID: 'AD8055',
-                              productQty: 9,
-                              imagePath: 'images/shoe2.png',
-                            ),
-                            ProductCard(
-                              productName: 'Puma Shoe',
-                              productID: 'PU7805',
-                              productQty: 11,
-                              imagePath: 'images/shoe3.png',
-                            ),
-                            ProductCard(
-                              productName: 'Nike Shoe',
-                              productID: 'NI2057',
-                              productQty: 10,
-                              imagePath: 'images/shoe4.png',
-                            ),
-                          ],
+                        child: StreamBuilder(
+                          stream: dbRef.onValue,
+                          builder:
+                              (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+                            List productList = [];
+                            if (snapshot.hasData) {
+                              Map<dynamic, dynamic> map =
+                                  snapshot.data!.snapshot.value as dynamic;
+                              map.forEach((key, value) {
+                                productList.add(value);
+                              });
+                              print(productList[0]['id']);
+                              print(productList[0]['name']);
+                              print(productList[0]['qty']);
+                              return ListView.builder(
+                                  itemCount:
+                                      snapshot.data!.snapshot.children.length,
+                                  itemBuilder: (context, index) {
+                                    return ProductCard(
+                                      productName:
+                                          '${productList[index]['name']}',
+                                      productID: '${productList[index]['id']}',
+                                      productQty: productList[index]['qty'],
+                                      imagePath:
+                                          '${productList[index]['image']}',
+                                    );
+                                  });
+                            } else {
+                              return const Center(child: Text('No Data'));
+                            }
+                          },
                         ),
                       ),
                     ],
