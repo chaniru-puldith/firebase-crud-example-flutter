@@ -201,7 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.all(1.0),
+                padding: const EdgeInsets.all(10.0),
                 child: TextButton(
                   onPressed: () {},
                   child: ShaderMask(
@@ -246,7 +246,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                     'Create your account',
                     style: TextStyle(
                       color: Colors.blueGrey.withOpacity(0.7),
-                      fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
                   )
@@ -378,7 +377,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                           'Already have an account?',
                           style: TextStyle(
                             color: Colors.blueGrey.withOpacity(0.5),
-                            fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
@@ -386,7 +384,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                           onPressed: () {},
                           child: const Text(
                             'Login',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
