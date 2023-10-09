@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud_example/screens/home_screen.dart';
 import 'package:firebase_crud_example/screens/register_screen.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
@@ -310,11 +311,15 @@ class _LoginScreenState extends State<LoginScreen>
                         if (error == null) {
                           var response =
                               await login(email: _email!, password: _password!);
-                          response == 'Success'
-                              ? displaySnackBar(
-                                  message: response, type: SnackBarType.success)
-                              : displaySnackBar(
-                                  message: response, type: SnackBarType.error);
+                          if (response == 'Success') {
+                            displaySnackBar(
+                                message: response, type: SnackBarType.success);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const HomeScreen()));
+                          } else {
+                            displaySnackBar(
+                                message: response, type: SnackBarType.error);
+                          }
                         } else {
                           displaySnackBar(
                               message: error, type: SnackBarType.error);
