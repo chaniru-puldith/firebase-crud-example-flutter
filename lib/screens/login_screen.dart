@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud_example/screens/register_screen.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -335,7 +336,10 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const RegisterScreen()));
+                          },
                           child: const Text(
                             'Sign Up',
                             style: TextStyle(
