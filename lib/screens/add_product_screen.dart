@@ -313,6 +313,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               child: Center(
                                 child: TextField(
                                   style: kTextFormFieldStyle,
+                                  keyboardType: TextInputType.number,
                                   decoration:
                                       kTextFiledInputDecoration.copyWith(
                                     hintText: 'Product Quantity',
