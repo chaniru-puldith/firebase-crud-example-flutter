@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
+  final _controller = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _database = FirebaseDatabase.instance;
   late AnimationController animationController;
@@ -256,6 +257,7 @@ class _LoginScreenState extends State<LoginScreen>
                       decoration: kTextFormFieldOuterContainerStyle,
                       child: Center(
                         child: TextField(
+                          controller: _controller,
                           obscureText: _isPasswordHidden,
                           style: kTextFormFieldStyle,
                           decoration: kTextFiledInputDecoration.copyWith(
@@ -294,10 +296,12 @@ class _LoginScreenState extends State<LoginScreen>
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const HomeScreen()));
                           } else {
+                            _controller.clear();
                             displaySnackBar(
                                 message: response, type: SnackBarType.error);
                           }
                         } else {
+                          _controller.clear();
                           displaySnackBar(
                               message: error, type: SnackBarType.error);
                         }

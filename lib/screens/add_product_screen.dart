@@ -20,11 +20,11 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final _database = FirebaseDatabase.instance;
   final _storage = FirebaseStorage.instance;
-  late String _path;
-  late String _fileName;
-  late String _name;
-  late String _id;
-  late String _qty;
+  String? _path;
+  String? _fileName;
+  String? _name;
+  String? _id;
+  String? _qty;
   Widget _imageWidget = Image.asset('images/shoe1.png');
 
   Future<String?> uploadFile(
@@ -258,7 +258,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                                         setState(() {
                                           _imageWidget =
-                                              Image.file(File(_path));
+                                              Image.file(File(_path!));
                                         });
                                       }
                                     },
@@ -330,46 +330,57 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             Center(
                               child: BottomButton(
                                 onPress: () async {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => const Center(
-                                          child: CircularProgressIndicator()));
-
-                                  String? response = await uploadFile(
-                                      filepath: _path, filename: '$_id.png');
-
-                                  if (response == null) {
-                                    Navigator.of(context).pop();
-
+                                  if (_name == null ||
+                                      _qty == null ||
+                                      _id == null ||
+                                      _qty == null) {
                                     displaySnackBar(
-                                      message:
-                                          'Error while uploading the product image',
-                                      type: SnackBarType.error,
-                                    );
+                                        message:
+                                            "Product Name, Product ID, Product Quantity, Product Image can\'t be empty",
+                                        type: SnackBarType.error);
                                   } else {
-                                    int _qtyNumber = int.parse(_qty);
-                                    ProductModel product = ProductModel(
-                                        id: _id,
-                                        name: _name,
-                                        qty: _qtyNumber,
-                                        imageUrl: response);
-                                    FirebaseModel firebaseModel =
-                                        FirebaseModel();
-                                    var firebaseResponse = await firebaseModel
-                                        .addProductData(product: product);
-                                    firebaseResponse == "Success"
-                                        ? displaySnackBar(
-                                            message: 'New product added',
-                                            type: SnackBarType.success,
-                                          )
-                                        : displaySnackBar(
-                                            message:
-                                                'Error while adding the product',
-                                            type: SnackBarType.error,
-                                          );
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => const Center(
+                                            child:
+                                                CircularProgressIndicator()));
+
+                                    String? response = await uploadFile(
+                                        filepath: _path!, filename: '$_id.png');
+
+                                    if (response == null) {
+                                      Navigator.of(context).pop();
+
+                                      displaySnackBar(
+                                        message:
+                                            'Error while uploading the product image',
+                                        type: SnackBarType.error,
+                                      );
+                                    } else {
+                                      int _qtyNumber = int.parse(_qty!);
+                                      ProductModel product = ProductModel(
+                                          id: _id,
+                                          name: _name,
+                                          qty: _qtyNumber,
+                                          imageUrl: response);
+                                      FirebaseModel firebaseModel =
+                                          FirebaseModel();
+                                      var firebaseResponse = await firebaseModel
+                                          .addProductData(product: product);
+                                      firebaseResponse == "Success"
+                                          ? displaySnackBar(
+                                              message: 'New product added',
+                                              type: SnackBarType.success,
+                                            )
+                                          : displaySnackBar(
+                                              message:
+                                                  'Error while adding the product',
+                                              type: SnackBarType.error,
+                                            );
+                                      Navigator.of(context).pop();
+                                    }
                                     Navigator.of(context).pop();
                                   }
-                                  Navigator.of(context).pop();
                                 },
                                 buttonTitle: 'Add Product ➜',
                               ),

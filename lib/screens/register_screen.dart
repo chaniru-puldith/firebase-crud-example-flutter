@@ -15,6 +15,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
+  final TextEditingController _controller = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _database = FirebaseDatabase.instance;
   late AnimationController _animationController;
@@ -45,8 +46,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       message = "Success";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
+        _controller.clear();
         message = 'User account already exists';
       } else {
+        _controller.clear();
         message = 'Unexpected Error';
       }
     }
