@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'constants.dart';
+import 'package:firebase_crud_example/models/firebase_model.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final String productName;
   final String productID;
   final int productQty;
@@ -14,6 +15,86 @@ class ProductCard extends StatelessWidget {
     required this.productQty,
     required this.imagePath,
   });
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  void displaySnackBar({required String message, required SnackBarType type}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.all(10.0),
+          margin: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: type == SnackBarType.error
+                    ? Colors.red.withOpacity(0.1)
+                    : Colors.green.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                type == SnackBarType.error
+                    ? Icons.error_outline
+                    : Icons.check_circle_outline,
+                size: 32,
+                color: type == SnackBarType.error ? Colors.red : Colors.green,
+              ),
+              const SizedBox(
+                width: 8.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      type == SnackBarType.error ? "Error" : "Success",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: type == SnackBarType.error
+                            ? Colors.red
+                            : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6.0,
+                    ),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +125,7 @@ class ProductCard extends StatelessWidget {
               child: SizedBox(
                 height: 100,
                 width: 100,
-                child: Image.network(imagePath),
+                child: Image.network(widget.imagePath),
               ),
             ),
           ),
@@ -71,7 +152,7 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(
                         width: 2,
                       ),
-                      Text(productName),
+                      Text(widget.productName),
                     ],
                   ),
                   const SizedBox(
@@ -86,7 +167,7 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(
                         width: 2,
                       ),
-                      Text(productID),
+                      Text(widget.productID),
                     ],
                   ),
                   const SizedBox(
@@ -101,7 +182,7 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(
                         width: 2,
                       ),
-                      Text(productQty.toString()),
+                      Text(widget.productQty.toString()),
                     ],
                   ),
                 ],
@@ -126,7 +207,27 @@ class ProductCard extends StatelessWidget {
                               'If you don\'t want to delete this product please press \'No\'.'),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(context, 'Yes'),
+                              onPressed: () async {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => const Center(
+                                        child: CircularProgressIndicator()));
+                                var response = await FirebaseModel()
+                                    .deleteProductData(
+                                        productId: widget.productID);
+                                response == "Success"
+                                    ? displaySnackBar(
+                                        message: 'Product deleted',
+                                        type: SnackBarType.success,
+                                      )
+                                    : displaySnackBar(
+                                        message:
+                                            'Error while deleting the product',
+                                        type: SnackBarType.error,
+                                      );
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
                               child: const Text(
                                 'Yes',
                                 style: TextStyle(color: Colors.orange),

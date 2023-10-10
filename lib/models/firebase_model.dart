@@ -18,4 +18,15 @@ class FirebaseModel {
       return 'Error while saving data';
     }
   }
+
+  Future<String> deleteProductData({required productId}) async {
+    try {
+      await _databaseReference.child('products').child(productId).update({
+        'status': 'disabled',
+      });
+      return 'Success';
+    } catch (e) {
+      return 'Error while saving data';
+    }
+  }
 }

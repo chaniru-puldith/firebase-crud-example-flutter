@@ -313,7 +313,8 @@ class _LoginScreenState extends State<LoginScreen>
                               await login(email: _email!, password: _password!);
                           if (response == 'Success') {
                             displaySnackBar(
-                                message: response, type: SnackBarType.success);
+                                message: 'User Logged In',
+                                type: SnackBarType.success);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const HomeScreen()));
                           } else {
