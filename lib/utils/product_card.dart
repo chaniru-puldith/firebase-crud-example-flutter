@@ -43,6 +43,7 @@ class ProductCard extends StatelessWidget {
               flex: 1,
               child: SizedBox(
                 height: 100,
+                width: 100,
                 child: Image.network(imagePath),
               ),
             ),

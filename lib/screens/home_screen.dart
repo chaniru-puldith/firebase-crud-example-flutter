@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud_example/screens/add_product_screen.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
 import 'package:firebase_crud_example/utils/product_card.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -28,10 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final user = _auth.currentUser;
       if (user != null) {
         _loggedInUser = user;
-        print(_loggedInUser.email.toString());
+        if (kDebugMode) {
+          print(_loggedInUser.email.toString());
+        }
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -41,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final String name = _loggedInUser.email.toString().split('@')[0];
 
     Query dbRef = _database.ref().child('products');
-    print(dbRef.get());
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -64,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             'Hi, $name!',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 23,
@@ -134,7 +139,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           BottomButton(
-                            onPress: () {},
+                            onPress: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AddProductScreen()));
+                            },
                             buttonTitle: 'Add Product',
                           ),
                         ],
@@ -149,14 +158,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               Map<dynamic, dynamic> map =
                                   snapshot.data!.snapshot.value as dynamic;
                               map.forEach((key, value) {
-                                productList.add(value);
+                                if (value['status'] == 'active') {
+                                  productList.add(value);
+                                }
                               });
-                              print(productList[0]['id']);
-                              print(productList[0]['name']);
-                              print(productList[0]['qty']);
+
                               return ListView.builder(
-                                  itemCount:
-                                      snapshot.data!.snapshot.children.length,
+                                  itemCount: productList.length,
                                   itemBuilder: (context, index) {
                                     return ProductCard(
                                       productName:

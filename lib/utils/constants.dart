@@ -11,7 +11,6 @@ const kTextFiledInputDecoration = InputDecoration(
     hintStyle: TextStyle(
       fontStyle: FontStyle.italic,
       fontSize: 17,
-      fontWeight: FontWeight.bold,
       color: Colors.grey,
     ),
     contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),

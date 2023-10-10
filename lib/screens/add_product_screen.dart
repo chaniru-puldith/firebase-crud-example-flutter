@@ -1,10 +1,121 @@
+import 'dart:ui';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_crud_example/models/firebase_model.dart';
+import 'package:firebase_crud_example/models/product_model.dart';
 import 'package:firebase_crud_example/utils/bottom_button.dart';
 import 'package:firebase_crud_example/utils/constants.dart';
-import 'package:firebase_crud_example/utils/rounded_product_text_field.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
-class AddProductScreen extends StatelessWidget {
+class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
+
+  @override
+  State<AddProductScreen> createState() => _AddProductScreenState();
+}
+
+class _AddProductScreenState extends State<AddProductScreen> {
+  final _database = FirebaseDatabase.instance;
+  final _storage = FirebaseStorage.instance;
+  late String _path;
+  late String _fileName;
+  late String _name;
+  late String _id;
+  late String _qty;
+  Widget _imageWidget = Image.asset('images/shoe1.png');
+
+  Future<String?> uploadFile(
+      {required String filepath, required String filename}) async {
+    print('$filename $filepath');
+    File file = File(filepath);
+
+    try {
+      await _storage.ref("products/$filename").putFile(file);
+      var url = await _storage.ref("products/$filename").getDownloadURL();
+      return url;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  void displaySnackBar({required String message, required SnackBarType type}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.all(10.0),
+          margin: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: type == SnackBarType.error
+                    ? Colors.red.withOpacity(0.1)
+                    : Colors.green.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                type == SnackBarType.error
+                    ? Icons.error_outline
+                    : Icons.check_circle_outline,
+                size: 32,
+                color: type == SnackBarType.error ? Colors.red : Colors.green,
+              ),
+              const SizedBox(
+                width: 8.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      type == SnackBarType.error ? "Error" : "Success",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: type == SnackBarType.error
+                            ? Colors.red
+                            : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6.0,
+                    ),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +210,8 @@ class AddProductScreen extends StatelessWidget {
                                   ),
                                   child: SizedBox(
                                     height: 100,
-                                    child: Image.asset('images/shoe1.png'),
+                                    width: 100,
+                                    child: _imageWidget,
                                   ),
                                 ),
                                 const SizedBox(
@@ -127,7 +239,29 @@ class AddProductScreen extends StatelessWidget {
                                       style:
                                           TextStyle(color: Colors.indigoAccent),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      final results =
+                                          await FilePicker.platform.pickFiles(
+                                        allowMultiple: false,
+                                        type: FileType.custom,
+                                        allowedExtensions: ['png'],
+                                      );
+
+                                      if (results == null) {
+                                        displaySnackBar(
+                                            message: "No File Selected",
+                                            type: SnackBarType.error);
+                                        return;
+                                      } else {
+                                        _path = results.files.single.path!;
+                                        _fileName = results.files.single.name;
+
+                                        setState(() {
+                                          _imageWidget =
+                                              Image.file(File(_path));
+                                        });
+                                      }
+                                    },
                                   ),
                                 ),
                               ],
@@ -135,45 +269,107 @@ class AddProductScreen extends StatelessWidget {
                             const SizedBox(
                               height: 40,
                             ),
-                            const Text(
-                              'Product Name',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              decoration: kTextFormFieldOuterContainerStyle,
+                              child: Center(
+                                child: TextField(
+                                  style: kTextFormFieldStyle,
+                                  decoration:
+                                      kTextFiledInputDecoration.copyWith(
+                                    hintText: 'Product Name',
+                                  ),
+                                  onChanged: (value) {
+                                    _name = value;
+                                  },
+                                ),
                               ),
                             ),
-                            const RoundedProductTextField(
-                              hintText: 'Product Name',
-                              labelText: null,
+                            const SizedBox(
+                              height: 20,
                             ),
-                            const Text(
-                              'Product Name',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              decoration: kTextFormFieldOuterContainerStyle,
+                              child: Center(
+                                child: TextField(
+                                  style: kTextFormFieldStyle,
+                                  decoration:
+                                      kTextFiledInputDecoration.copyWith(
+                                    hintText: 'Product ID',
+                                  ),
+                                  onChanged: (value) {
+                                    _id = value;
+                                  },
+                                ),
                               ),
                             ),
-                            const RoundedProductTextField(
-                              hintText: 'Product ID',
-                              labelText: null,
+                            const SizedBox(
+                              height: 20,
                             ),
-                            const Text(
-                              'Product Quantity',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              decoration: kTextFormFieldOuterContainerStyle,
+                              child: Center(
+                                child: TextField(
+                                  style: kTextFormFieldStyle,
+                                  decoration:
+                                      kTextFiledInputDecoration.copyWith(
+                                    hintText: 'Product Quantity',
+                                  ),
+                                  onChanged: (value) {
+                                    _qty = value;
+                                  },
+                                ),
                               ),
-                            ),
-                            const RoundedProductTextField(
-                              hintText: 'Product Quantity',
-                              labelText: null,
                             ),
                             const SizedBox(
                               height: 20,
                             ),
                             Center(
                               child: BottomButton(
-                                onPress: () {},
+                                onPress: () async {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => const Center(
+                                          child: CircularProgressIndicator()));
+
+                                  String? response = await uploadFile(
+                                      filepath: _path, filename: '$_id.png');
+
+                                  if (response == null) {
+                                    Navigator.of(context).pop();
+
+                                    displaySnackBar(
+                                      message:
+                                          'Error while uploading the product image',
+                                      type: SnackBarType.error,
+                                    );
+                                  } else {
+                                    int _qtyNumber = int.parse(_qty);
+                                    ProductModel product = ProductModel(
+                                        id: _id,
+                                        name: _name,
+                                        qty: _qtyNumber,
+                                        imageUrl: response);
+                                    FirebaseModel firebaseModel =
+                                        FirebaseModel();
+                                    var firebaseResponse = await firebaseModel
+                                        .addProductData(product: product);
+                                    firebaseResponse == "Success"
+                                        ? displaySnackBar(
+                                            message: 'New product added',
+                                            type: SnackBarType.success,
+                                          )
+                                        : displaySnackBar(
+                                            message:
+                                                'Error while adding the product',
+                                            type: SnackBarType.error,
+                                          );
+                                    Navigator.of(context).pop();
+                                  }
+                                  Navigator.of(context).pop();
+                                },
                                 buttonTitle: 'Add Product ➜',
                               ),
                             ),
