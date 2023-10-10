@@ -1,3 +1,5 @@
+import 'package:firebase_crud_example/screens/add_product_screen.dart';
+import 'package:firebase_crud_example/screens/edit_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'package:firebase_crud_example/models/firebase_model.dart';
@@ -6,14 +8,14 @@ class ProductCard extends StatefulWidget {
   final String productName;
   final String productID;
   final int productQty;
-  final String imagePath;
+  final String imageUrl;
 
   const ProductCard({
     super.key,
     required this.productName,
     required this.productID,
     required this.productQty,
-    required this.imagePath,
+    required this.imageUrl,
   });
 
   @override
@@ -125,7 +127,7 @@ class _ProductCardState extends State<ProductCard> {
               child: SizedBox(
                 height: 100,
                 width: 100,
-                child: Image.network(widget.imagePath),
+                child: Image.network(widget.imageUrl),
               ),
             ),
           ),
@@ -193,7 +195,15 @@ class _ProductCardState extends State<ProductCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => EditProductScreen(
+                              productId: widget.productID,
+                              name: widget.productName,
+                              qty: widget.productQty,
+                              imageUrl: widget.imageUrl,
+                            )));
+                  },
                   child: buildGradientIcon(const Icon(Icons.edit_outlined))),
               TextButton(
                   onPressed: () => showDialog(

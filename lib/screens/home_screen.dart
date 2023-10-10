@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           '${productList[index]['name']}',
                                       productID: '${productList[index]['id']}',
                                       productQty: productList[index]['qty'],
-                                      imagePath:
+                                      imageUrl:
                                           '${productList[index]['image']}',
                                     );
                                   });
