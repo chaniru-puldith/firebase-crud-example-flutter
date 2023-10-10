@@ -27,9 +27,13 @@ class EditProductScreen extends StatefulWidget {
 }
 
 class _EditProductScreenState extends State<EditProductScreen> {
+  late TextEditingController _nameController;
+  late TextEditingController _idController;
+  late TextEditingController _qtyController;
+
   final _storage = FirebaseStorage.instance;
-  late String _path;
-  late String _fileName;
+  String? _path;
+  String? _fileName;
   late Widget image;
   String? newProductName;
   String? newProductId;
@@ -130,6 +134,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     super.initState();
     image = Image.network(widget.imageUrl);
+    newImage = image;
+    _nameController = TextEditingController(text: widget.name);
+    _idController = TextEditingController(text: widget.productId);
+    _qtyController = TextEditingController(text: '${widget.qty}');
   }
 
   @override
@@ -271,7 +279,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                         _path = results.files.single.path!;
                                         _fileName = results.files.single.name;
 
-                                        newImage = Image.file(File(_path));
+                                        newImage = Image.file(File(_path!));
 
                                         setState(() {
                                           image = newImage;
@@ -290,11 +298,29 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               decoration: kTextFormFieldOuterContainerStyle,
                               child: Center(
                                 child: TextField(
+                                  controller: _idController,
+                                  enabled: false,
+                                  style: kTextFormFieldStyle,
+                                  decoration:
+                                      kTextFiledInputDecoration.copyWith(
+                                    hintText: 'Product ID',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              decoration: kTextFormFieldOuterContainerStyle,
+                              child: Center(
+                                child: TextField(
+                                  controller: _nameController,
                                   style: kTextFormFieldStyle,
                                   decoration:
                                       kTextFiledInputDecoration.copyWith(
                                     hintText: 'Product Name',
-                                    labelText: widget.name,
                                   ),
                                   onChanged: (value) {
                                     newProductName = value;
@@ -310,32 +336,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               decoration: kTextFormFieldOuterContainerStyle,
                               child: Center(
                                 child: TextField(
-                                  style: kTextFormFieldStyle,
-                                  decoration:
-                                      kTextFiledInputDecoration.copyWith(
-                                    hintText: 'Product ID',
-                                    labelText: widget.productId,
-                                  ),
-                                  onChanged: (value) {
-                                    newProductId = value;
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              decoration: kTextFormFieldOuterContainerStyle,
-                              child: Center(
-                                child: TextField(
+                                  controller: _qtyController,
                                   style: kTextFormFieldStyle,
                                   keyboardType: TextInputType.number,
                                   decoration:
                                       kTextFiledInputDecoration.copyWith(
                                     hintText: 'Product Quantity',
-                                    labelText: '${widget.qty}',
                                   ),
                                   onChanged: (value) {
                                     newProductQty = value;
@@ -349,64 +355,55 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             Center(
                               child: BottomButton(
                                 onPress: () async {
-                                  if (newProductId == null ||
-                                      newProductName == null ||
-                                      newProductQty == null ||
-                                      newProductId!.isEmpty ||
-                                      newProductId!.isEmpty ||
-                                      newProductQty!.isEmpty) {
-                                    displaySnackBar(
-                                        message:
-                                            'Product Name, Product ID, Product Quantity can\'t be empty',
-                                        type: SnackBarType.error);
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => const Center(
+                                          child: CircularProgressIndicator()));
+                                  String? response;
+
+                                  if (_path == null) {
+                                    response = widget.imageUrl;
                                   } else {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => const Center(
-                                            child:
-                                                CircularProgressIndicator()));
-
-                                    String? response = await uploadFile(
-                                        filepath: _path,
+                                    response = await uploadFile(
+                                        filepath: _path!,
                                         filename: '$newProductId.png');
+                                  }
 
-                                    if (response == null) {
-                                      Navigator.of(context).pop();
+                                  if (response == null) {
+                                    Navigator.of(context).pop();
 
-                                      displaySnackBar(
-                                        message:
-                                            'Error while uploading the product image',
-                                        type: SnackBarType.error,
-                                      );
-                                    } else {
-                                      int _qtyNumber =
-                                          int.parse(newProductQty!);
-
-                                      ProductModel product = ProductModel(
-                                          id: newProductId,
-                                          name: newProductName,
-                                          qty: _qtyNumber,
-                                          imageUrl: response);
-                                      FirebaseModel firebaseModel =
-                                          FirebaseModel();
-                                      var firebaseResponse =
-                                          await firebaseModel.updateProductData(
-                                              product: product,
-                                              oldId: widget.productId);
-                                      firebaseResponse == "Success"
-                                          ? displaySnackBar(
-                                              message: 'Product Updated',
-                                              type: SnackBarType.success,
-                                            )
-                                          : displaySnackBar(
-                                              message:
-                                                  'Error while updating the product',
-                                              type: SnackBarType.error,
-                                            );
-                                      Navigator.of(context).pop();
-                                    }
+                                    displaySnackBar(
+                                      message:
+                                          'Error while uploading the product image',
+                                      type: SnackBarType.error,
+                                    );
+                                  } else {
+                                    ProductModel product = ProductModel(
+                                        id: widget.productId,
+                                        name: newProductName ?? widget.name,
+                                        qty: newProductQty != null
+                                            ? int.parse(newProductQty!)
+                                            : widget.qty,
+                                        imageUrl: response);
+                                    FirebaseModel firebaseModel =
+                                        FirebaseModel();
+                                    var firebaseResponse =
+                                        await firebaseModel.updateProductData(
+                                            product: product,
+                                            oldId: widget.productId);
+                                    firebaseResponse == "Success"
+                                        ? displaySnackBar(
+                                            message: 'Product Updated',
+                                            type: SnackBarType.success,
+                                          )
+                                        : displaySnackBar(
+                                            message:
+                                                'Error while updating the product',
+                                            type: SnackBarType.error,
+                                          );
                                     Navigator.of(context).pop();
                                   }
+                                  Navigator.of(context).pop();
                                 },
                                 buttonTitle: 'Save Product ➜',
                               ),

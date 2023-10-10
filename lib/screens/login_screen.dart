@@ -194,32 +194,8 @@ class _LoginScreenState extends State<LoginScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: TextButton(
-                  onPressed: () {},
-                  child: ShaderMask(
-                    blendMode: BlendMode.srcIn,
-                    shaderCallback: (Rect bounds) => const RadialGradient(
-                      center: Alignment.topCenter,
-                      stops: [.5, 1],
-                      colors: [
-                        Colors.blue,
-                        Colors.purple,
-                      ],
-                    ).createShader(bounds),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              ),
-            ),
             Expanded(
-              flex: 4,
+              flex: 7,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

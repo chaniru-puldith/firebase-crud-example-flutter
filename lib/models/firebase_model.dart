@@ -33,13 +33,10 @@ class FirebaseModel {
   Future<String> updateProductData(
       {required ProductModel product, required String oldId}) async {
     try {
-      await _databaseReference.child('products').child(oldId).remove();
-      await _databaseReference.child('products').child(product.getId).set({
+      await _databaseReference.child('products').child(product.getId).update({
         'name': product.getName,
-        'id': product.getId,
         'qty': product.getQty,
         'image': product.getImageUrl,
-        'status': 'active',
       });
       return 'Success';
     } catch (e) {
